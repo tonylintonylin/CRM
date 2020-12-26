@@ -20,9 +20,10 @@ import { MatSortModule } from '@angular/material/sort';
 import { NavBarComponent } from './nav-bar/nav-bar.component';
 import { OpportunitiesComponent } from './opportunities/opportunities.component';
 import { HttpClientModule } from '@angular/common/http';
+import { LeadsComponent } from './leads/leads.component';
 
 @NgModule({
-  declarations: [AppComponent, NavBarComponent, OpportunitiesComponent],
+  declarations: [AppComponent, NavBarComponent, OpportunitiesComponent, LeadsComponent],
   imports: [
     BrowserModule,
     AppRoutingModule,

@@ -1,2 +1,8 @@
 <app-nav-bar></app-nav-bar>
-<app-opportunities></app-opportunities>
+<!-- <app-opportunities></app-opportunities>
+<app-leads></app-leads> -->
+<ul>
+    <li class="list-unstyled" *ngFor="let lead of leads">
+        {{lead.firstName}}
+    </li>
+</ul>
