@@ -37,81 +37,161 @@ import { catchError, map, startWith, switchMap } from 'rxjs/operators';
   styleUrls: ['./leads.component.scss'],
 })
 export class LeadsComponent implements AfterViewInit {
-  displayedColumns: string[] = ['created', 'state', 'number', 'title'];
-  exampleDatabase: ExampleHttpDatabase | null;
-  data: GithubIssue[] = [];
+  leadsColumns: string[] = ['created', 'state', 'number', 'title', 'company', 'email', 'rating', 'status', 'owner'];
+  leadsDatabase: ExampleHttpDatabase | null;
+  leadsData: Lead[] = [];
 
-  resultsLength = 0;
-  isLoadingResults = true;
-  isRateLimitReached = false;
+  leadsLength = 0;
+  isLoadingLeads = true;
+  isLeadsRateLimitReached = false;
 
-  @ViewChild(MatPaginator) paginator: MatPaginator;
-  @ViewChild(MatSort) sort: MatSort;
+  @ViewChild(MatPaginator) leadsPaginator: MatPaginator;
+  @ViewChild(MatSort) leadsSort: MatSort;
+
+  // displayedColumns: string[] = ['created', 'state', 'number', 'title'];
+  // exampleDatabase: ExampleHttpDatabase | null;
+  // data: GithubIssue[] = [];
+
+  // resultsLength = 0;
+  // isLoadingResults = true;
+  // isRateLimitReached = false;
+
+  // @ViewChild(MatPaginator) paginator: MatPaginator;
+  // @ViewChild(MatSort) sort: MatSort;
 
   constructor(private _httpClient: HttpClient) {}
 
   ngAfterViewInit() {
-    this.exampleDatabase = new ExampleHttpDatabase(this._httpClient);
+    this.leadsDatabase = new ExampleHttpDatabase(this._httpClient);
 
     // If the user changes the sort order, reset back to the first page.
-    this.sort.sortChange.subscribe(() => (this.paginator.pageIndex = 0));
+    this.leadsSort.sortChange.subscribe(
+      () => (this.leadsPaginator.pageIndex = 0)
+    );
 
-    merge(this.sort.sortChange, this.paginator.page)
+    merge(this.leadsSort.sortChange, this.leadsPaginator.page)
       .pipe(
         startWith({}),
         switchMap(() => {
-          this.isLoadingResults = true;
-          return this.exampleDatabase!.getRepoIssues(
-            this.sort.active,
-            this.sort.direction,
-            this.paginator.pageIndex
-          );
-        }),
-        map((data) => {
-          // Flip flag to show that loading has finished.
-          this.isLoadingResults = false;
-          this.isRateLimitReached = false;
-          this.resultsLength = data.total_count;
+          this.isLoadingLeads = true;
 
-          return data.items;
+          return this.leadsDatabase!.getLeads
+          // this.leadsSort.active,
+          // this.leadsSort.direction,
+          // this.leadsPaginator.pageIndex
+            ();
+        }),
+        map((leadsData) => {
+          // Flip flag to show that loading has finished.
+          this.isLoadingLeads = false;
+          this.isLeadsRateLimitReached = false;
+          this.leadsLength = leadsData.rows;
+
+          console.log(leadsData);
+
+          return leadsData.items;
         }),
         catchError(() => {
-          this.isLoadingResults = false;
+          this.isLoadingLeads = false;
           // Catch if the GitHub API has reached its rate limit. Return empty data.
-          this.isRateLimitReached = true;
+          this.isLeadsRateLimitReached = true;
           return observableOf([]);
         })
       )
-      .subscribe((data) => (this.data = data));
+      .subscribe((leadsData) => (this.leadsData = leadsData));
+
+    //github api example
+
+    //   this.exampleDatabase = new ExampleHttpDatabase(this._httpClient);
+
+    //   // If the user changes the sort order, reset back to the first page.
+    //   this.sort.sortChange.subscribe(() => (this.paginator.pageIndex = 0));
+
+    //   merge(this.sort.sortChange, this.paginator.page)
+    //     .pipe(
+    //       startWith({}),
+    //       switchMap(() => {
+    //         this.isLoadingResults = true;
+    //         return this.exampleDatabase!.getRepoIssues(
+    //           this.sort.active,
+    //           this.sort.direction,
+    //           this.paginator.pageIndex
+    //         );
+    //       }),
+    //       map((data) => {
+    //         // Flip flag to show that loading has finished.
+    //         this.isLoadingResults = false;
+    //         this.isRateLimitReached = false;
+    //         this.resultsLength = data.total_count;
+
+    //         return data.items;
+    //       }),
+    //       catchError(() => {
+    //         this.isLoadingResults = false;
+    //         // Catch if the GitHub API has reached its rate limit. Return empty data.
+    //         this.isRateLimitReached = true;
+    //         return observableOf([]);
+    //       })
+    //     )
+    //     .subscribe((data) => (this.data = data));
   }
 }
 
-export interface GithubApi {
-  items: GithubIssue[];
-  total_count: number;
+// export interface GithubApi {
+//   items: GithubIssue[];
+//   total_count: number;
+// }
+
+// export interface GithubIssue {
+//   created_at: string;
+//   number: string;
+//   state: string;
+//   title: string;
+// }
+
+export interface LeadApi {
+  items: Lead[];
+  rows: number;
 }
 
-export interface GithubIssue {
-  created_at: string;
+export interface Lead {
+  name: string;
   number: string;
-  state: string;
   title: string;
+  company: string;
+  email: string;
+  rating: string;
+  status: string;
+  owner: string;
 }
 
 /** An example database that the data source uses to retrieve data for the table. */
 export class ExampleHttpDatabase {
   constructor(private _httpClient: HttpClient) {}
 
-  getRepoIssues(
-    sort: string,
-    order: string,
-    page: number
-  ): Observable<GithubApi> {
-    const href = 'https://api.github.com/search/issues';
-    const requestUrl = `${href}?q=repo:angular/components&sort=${sort}&order=${order}&page=${
-      page + 1
-    }`;
+  getLeads(): // sort: string,
+  // order: string,
+  // page: number
+  Observable<LeadApi> {
+    const href = 'https://localhost:5001/api/leads';
+    // const requestUrl = `${href}?q=repo:angular/components&sort=${sort}&order=${order}&page=${
+    //   page + 1
+    // }`;
 
-    return this._httpClient.get<GithubApi>(requestUrl);
+    // return this._httpClient.get<GithubApi>(requestUrl);
+    return this._httpClient.get<LeadApi>(href);
   }
+
+  // getRepoIssues(
+  //   sort: string,
+  //   order: string,
+  //   page: number
+  // ): Observable<GithubApi> {
+  //   const href = 'https://api.github.com/search/issues';
+  //   const requestUrl = `${href}?q=repo:angular/components&sort=${sort}&order=${order}&page=${
+  //     page + 1
+  //   }`;
+
+  //   return this._httpClient.get<GithubApi>(requestUrl);
+  // }
 }
