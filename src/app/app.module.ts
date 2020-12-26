@@ -18,12 +18,11 @@ import { MatTableModule } from '@angular/material/table';
 import { MatPaginatorModule } from '@angular/material/paginator';
 import { MatSortModule } from '@angular/material/sort';
 import { NavBarComponent } from './nav-bar/nav-bar.component';
+import { OpportunitiesComponent } from './opportunities/opportunities.component';
+import { HttpClientModule } from '@angular/common/http';
 
 @NgModule({
-  declarations: [
-    AppComponent,
-    NavBarComponent
-  ],
+  declarations: [AppComponent, NavBarComponent, OpportunitiesComponent],
   imports: [
     BrowserModule,
     AppRoutingModule,
@@ -40,9 +39,10 @@ import { NavBarComponent } from './nav-bar/nav-bar.component';
     MatMenuModule,
     MatTableModule,
     MatPaginatorModule,
-    MatSortModule
+    MatSortModule,
+    HttpClientModule,
   ],
   providers: [],
-  bootstrap: [AppComponent]
+  bootstrap: [AppComponent],
 })
-export class AppModule { }
+export class AppModule {}
