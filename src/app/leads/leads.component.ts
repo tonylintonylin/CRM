@@ -38,9 +38,9 @@ import { catchError, map, startWith, switchMap } from 'rxjs/operators';
 })
 export class LeadsComponent implements AfterViewInit {
   leadsColumns: string[] = [
-    'created',
-    'number',
-    'name',
+    // 'created',
+    // 'number',
+    'Name',
     'title',
     'company',
     'email',
@@ -87,7 +87,7 @@ export class LeadsComponent implements AfterViewInit {
 
           return this.leadsDatabase!.getLeads(
             this.leadsSort.active,
-            // this.leadsSort.direction,
+            this.leadsSort.direction,
             this.leadsPaginator.pageIndex
           );
         }),
@@ -103,7 +103,7 @@ export class LeadsComponent implements AfterViewInit {
         }),
         catchError(() => {
           this.isLoadingLeads = false;
-          // Catch if the GitHub API has reached its rate limit. Return empty data.
+          // Catch if the API has reached its rate limit. Return empty data.
           this.isLeadsRateLimitReached = true;
           return observableOf([]);
         })
@@ -179,16 +179,18 @@ export interface Lead {
 export class ExampleHttpDatabase {
   constructor(private _httpClient: HttpClient) {}
 
-  getLeads(
-     sort: string,
-  //   order: string,
-     page: number
-   ):Observable<LeadApi> {
+  getLeads(sort: string, order: string, page: number): Observable<LeadApi> {
     const href = 'https://localhost:5001/api/leads';
     // const requestUrl = `${href}?q=repo:angular/components&sort=${sort}&order=${order}&page=${
     //   page + 1
     // }`;
-   const requestUrl = `${href}?Page=${page + 1}&?Sort=${sort}`;
+    //  const requestUrl = `${href}?q=repo:angular/components&sort=${sort}&page=${
+    //    page + 1
+    //  }`;
+    if (order == 'desc') order = '-';
+    else order = '';
+
+    const requestUrl = `${href}?Page=${page + 1}&Sort=${order}${sort}`;
     // return this._httpClient.get<LeadApi>(href);
     return this._httpClient.get<LeadApi>(requestUrl);
   }
