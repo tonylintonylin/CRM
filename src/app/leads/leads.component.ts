@@ -37,7 +37,17 @@ import { catchError, map, startWith, switchMap } from 'rxjs/operators';
   styleUrls: ['./leads.component.scss'],
 })
 export class LeadsComponent implements AfterViewInit {
-  leadsColumns: string[] = ['created', 'state', 'number', 'title', 'company', 'email', 'rating', 'status', 'owner'];
+  leadsColumns: string[] = [
+    'created',
+    'number',
+    'name',
+    'title',
+    'company',
+    'email',
+    'rating',
+    'status',
+    'ownerAlias',
+  ];
   leadsDatabase: ExampleHttpDatabase | null;
   leadsData: Lead[] = [];
 
@@ -75,11 +85,11 @@ export class LeadsComponent implements AfterViewInit {
         switchMap(() => {
           this.isLoadingLeads = true;
 
-          return this.leadsDatabase!.getLeads
-          // this.leadsSort.active,
-          // this.leadsSort.direction,
-          // this.leadsPaginator.pageIndex
-            ();
+          return this.leadsDatabase!.getLeads(
+            this.leadsSort.active,
+            // this.leadsSort.direction,
+            this.leadsPaginator.pageIndex
+          );
         }),
         map((leadsData) => {
           // Flip flag to show that loading has finished.
@@ -155,31 +165,32 @@ export interface LeadApi {
 }
 
 export interface Lead {
-  name: string;
   number: string;
+  name: string;
   title: string;
   company: string;
   email: string;
   rating: string;
   status: string;
-  owner: string;
+  ownerAlias: string;
 }
 
 /** An example database that the data source uses to retrieve data for the table. */
 export class ExampleHttpDatabase {
   constructor(private _httpClient: HttpClient) {}
 
-  getLeads(): // sort: string,
-  // order: string,
-  // page: number
-  Observable<LeadApi> {
+  getLeads(
+     sort: string,
+  //   order: string,
+     page: number
+   ):Observable<LeadApi> {
     const href = 'https://localhost:5001/api/leads';
     // const requestUrl = `${href}?q=repo:angular/components&sort=${sort}&order=${order}&page=${
     //   page + 1
     // }`;
-
-    // return this._httpClient.get<GithubApi>(requestUrl);
-    return this._httpClient.get<LeadApi>(href);
+   const requestUrl = `${href}?Page=${page + 1}&?Sort=${sort}`;
+    // return this._httpClient.get<LeadApi>(href);
+    return this._httpClient.get<LeadApi>(requestUrl);
   }
 
   // getRepoIssues(
