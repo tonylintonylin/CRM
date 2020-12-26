@@ -39,14 +39,14 @@ import { catchError, map, startWith, switchMap } from 'rxjs/operators';
 export class LeadsComponent implements AfterViewInit {
   leadsColumns: string[] = [
     // 'created',
-    // 'number',
+    'index',
     'Name',
-    'title',
-    'company',
-    'email',
-    'rating',
-    'status',
-    'ownerAlias',
+    'Title',
+    'Company',
+    'Email',
+    'Rating',
+    'Status',
+    'OwnerAlias',
   ];
   leadsDatabase: ExampleHttpDatabase | null;
   leadsData: Lead[] = [];
@@ -165,7 +165,6 @@ export interface LeadApi {
 }
 
 export interface Lead {
-  number: string;
   name: string;
   title: string;
   company: string;
