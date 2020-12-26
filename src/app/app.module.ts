@@ -21,9 +21,15 @@ import { NavBarComponent } from './nav-bar/nav-bar.component';
 import { OpportunitiesComponent } from './opportunities/opportunities.component';
 import { HttpClientModule } from '@angular/common/http';
 import { LeadsComponent } from './leads/leads.component';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
 @NgModule({
-  declarations: [AppComponent, NavBarComponent, OpportunitiesComponent, LeadsComponent],
+  declarations: [
+    AppComponent,
+    NavBarComponent,
+    OpportunitiesComponent,
+    LeadsComponent,
+  ],
   imports: [
     BrowserModule,
     AppRoutingModule,
@@ -42,6 +48,7 @@ import { LeadsComponent } from './leads/leads.component';
     MatPaginatorModule,
     MatSortModule,
     HttpClientModule,
+    MatProgressSpinnerModule,
   ],
   providers: [],
   bootstrap: [AppComponent],
